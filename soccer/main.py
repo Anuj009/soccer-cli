@@ -104,10 +104,19 @@ def get_live_scores(writer, use_12_hour_format):
     req = session.get(LIVE_URL)
     if req.status_code == requests.codes.ok:
         scores = req.json()
+        d1 = d2 = 0               #######################
+        for x in scores["games"]:    #######################
+            d1 += x["goalsAwayTeam"] + x["goalsHomeTeam"]   #######################
         if len(scores["games"]) == 0:
             click.secho("No live action currently", fg="red", bold=True)
             return
         writer.live_scores(scores, use_12_hour_format)
+        while d1 == d2:                 #########################
+            d2 = 0
+            scores = req.json()         #########################
+            for x in scores["games"]:    #########################
+                d2 += x["goalsAwayTeam"] + x["goalsHomeTeam"]   #######################
+        get_live_scores(writer, use_12_hour_format)
     else:
         click.secho("There was problem getting live scores", fg="red", bold=True)
 
